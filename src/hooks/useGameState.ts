@@ -52,14 +52,29 @@ export const useGameState = () => {
     const { row, col } = piece.position;
     const colIndex = COLUMNS.indexOf(col);
     
-    // All pieces move the same way: 1 step in any direction (8 directions)
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [0, -1],           [0, 1],
-      [1, -1],  [1, 0],  [1, 1]
+    // Check if current position can make diagonal moves
+    const isOddRow = row % 2 === 1;
+    const isDiagonalCol = ['A', 'C', 'F', 'G'].includes(col);
+    const canMoveDiagonally = isOddRow && isDiagonalCol;
+    
+    // All pieces can move horizontally and vertically (along grid lines)
+    const orthogonalDirections = [
+      [-1, 0], // Up
+      [1, 0],  // Down
+      [0, -1], // Left
+      [0, 1],  // Right
     ];
     
-    directions.forEach(([deltaRow, deltaCol]) => {
+    // Diagonal directions (only if at diagonal intersection)
+    const diagonalDirections = [
+      [-1, -1], // Top-left
+      [-1, 1],  // Top-right
+      [1, -1],  // Bottom-left
+      [1, 1]    // Bottom-right
+    ];
+    
+    // Check orthogonal moves (always available)
+    orthogonalDirections.forEach(([deltaRow, deltaCol]) => {
       const newRow = row + deltaRow;
       const newColIndex = colIndex + deltaCol;
       
@@ -79,6 +94,30 @@ export const useGameState = () => {
         }
       }
     });
+    
+    // Check diagonal moves (only if at diagonal intersection)
+    if (canMoveDiagonally) {
+      diagonalDirections.forEach(([deltaRow, deltaCol]) => {
+        const newRow = row + deltaRow;
+        const newColIndex = colIndex + deltaCol;
+        
+        // Check bounds
+        if (newRow >= 1 && newRow <= 7 && newColIndex >= 0 && newColIndex < 7) {
+          const newCol = COLUMNS[newColIndex];
+          const targetSquare = board[newRow - 1][newColIndex];
+          
+          // Can move to empty square or capture enemy piece
+          if (!targetSquare || targetSquare.player !== piece.player) {
+            // Check if this piece can capture the target (if any)
+            if (targetSquare && !canCapture(piece, targetSquare)) {
+              return; // Cannot capture this piece
+            }
+            
+            validMoves.push({ row: newRow, col: newCol });
+          }
+        }
+      });
+    }
     
     // Pieces can also stay in place (do nothing)
     validMoves.push({ row, col });

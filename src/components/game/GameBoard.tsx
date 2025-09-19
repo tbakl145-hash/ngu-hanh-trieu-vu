@@ -61,51 +61,54 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
             />
           ))}
 
-          {/* Diagonal lines */}
-          {/* Main diagonals */}
-          <line x1="40" y1="40" x2="520" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
-          <line x1="520" y1="40" x2="40" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
-          
-          {/* Additional diagonal connections */}
+          {/* Diagonal lines - only from odd rows (1,3,5,7) and specific columns (A,C,F,G) */}
           {ROWS.map((row, rowIndex) => 
             COLUMNS.map((col, colIndex) => {
-              const x = 40 + colIndex * 80;
-              const y = 40 + rowIndex * 80;
+              // Only draw diagonals from odd rows and specific columns (A, C, F, G)
+              const isOddRow = row % 2 === 1;
+              const isDiagonalCol = ['A', 'C', 'F', 'G'].includes(col);
               
-              // Connect to adjacent diagonal squares
+              if (!isOddRow || !isDiagonalCol) {
+                return null;
+              }
+              
+              const x = 40 + colIndex * 80;
+              const y = 40 + (ROWS.length - row) * 80; // Adjusted for correct positioning
+              
               const lines = [];
               
-              // Top-right diagonal
-              if (rowIndex > 0 && colIndex < COLUMNS.length - 1) {
-                lines.push(
-                  <line
-                    key={`diag-tr-${row}-${col}`}
-                    x1={x}
-                    y1={y}
-                    x2={x + 80}
-                    y2={y - 80}
-                    stroke="hsl(var(--grid-line))"
-                    strokeWidth="1"
-                    opacity="0.6"
-                  />
-                );
-              }
+              // Draw diagonals to adjacent squares (all 4 diagonal directions)
+              const diagonalDirections = [
+                [-1, -1], // Top-left
+                [-1, 1],  // Top-right
+                [1, -1],  // Bottom-left
+                [1, 1]    // Bottom-right
+              ];
               
-              // Bottom-right diagonal
-              if (rowIndex < ROWS.length - 1 && colIndex < COLUMNS.length - 1) {
-                lines.push(
-                  <line
-                    key={`diag-br-${row}-${col}`}
-                    x1={x}
-                    y1={y}
-                    x2={x + 80}
-                    y2={y + 80}
-                    stroke="hsl(var(--grid-line))"
-                    strokeWidth="1"
-                    opacity="0.6"
-                  />
-                );
-              }
+              diagonalDirections.forEach(([deltaRow, deltaCol], index) => {
+                const targetRow = row + deltaRow;
+                const targetColIndex = colIndex + deltaCol;
+                const targetCol = COLUMNS[targetColIndex];
+                
+                // Check if target position is within bounds
+                if (targetRow >= 1 && targetRow <= 7 && targetColIndex >= 0 && targetColIndex < 7) {
+                  const targetX = 40 + targetColIndex * 80;
+                  const targetY = 40 + (ROWS.length - targetRow) * 80;
+                  
+                  lines.push(
+                    <line
+                      key={`diag-${row}-${col}-${index}`}
+                      x1={x}
+                      y1={y}
+                      x2={targetX}
+                      y2={targetY}
+                      stroke="hsl(var(--grid-line))"
+                      strokeWidth="1.5"
+                      opacity="0.7"
+                    />
+                  );
+                }
+              });
               
               return lines;
             })
