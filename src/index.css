@@ -2,41 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Cờ Ngũ Hành Design System - Five Elements Chess
+Traditional Vietnamese game with Five Elements philosophy
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    /* Game Background & Board */
+    --game-background: 45 85% 85%;
+    --board-background: 48 100% 80%;
+    --board-border: 30 15% 15%;
+    --grid-line: 30 25% 25%;
+    --center-universe: 0 85% 55%;
+    
+    /* Base UI Colors */
+    --background: 45 25% 95%;
+    --foreground: 30 15% 15%;
+    --card: 45 20% 98%;
+    --card-foreground: 30 15% 15%;
+    --popover: 48 25% 96%;
+    --popover-foreground: 30 15% 15%;
+    
+    /* Primary Theme - Golden */
+    --primary: 45 85% 45%;
+    --primary-foreground: 45 15% 95%;
+    --primary-glow: 45 100% 65%;
+    
+    /* Game Elements */
+    --secondary: 45 40% 85%;
+    --secondary-foreground: 30 25% 25%;
+    --accent: 45 60% 75%;
+    --accent-foreground: 30 25% 25%;
+    --muted: 45 20% 90%;
+    --muted-foreground: 30 25% 55%;
+    
+    /* Five Elements Colors */
+    --kim-gold: 45 100% 50%;        /* Kim - Metal/Gold (Mountains) */
+    --thuy-blue: 200 85% 55%;       /* Thủy - Water */
+    --moc-green: 120 60% 45%;       /* Mộc - Wood */
+    --hoa-red: 0 85% 60%;           /* Hỏa - Fire */
+    --tho-earth: 25 45% 55%;        /* Thổ - Earth (Master) */
+    
+    /* Game States */
+    --valid-move: 120 50% 75%;
+    --selected-piece: 45 80% 70%;
+    --enemy-piece: 0 60% 70%;
+    --day-player: 45 15% 95%;       /* White pieces - Day */
+    --night-player: 220 15% 25%;    /* Dark pieces - Night */
+    
+    /* UI States */
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 15% 95%;
+    --border: 45 25% 80%;
+    --input: 45 25% 88%;
+    --ring: 45 85% 45%;
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-board: linear-gradient(135deg, hsl(var(--board-background)), hsl(48 90% 75%));
+    --gradient-piece: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-master: conic-gradient(from 0deg, hsl(var(--hoa-red)), hsl(var(--kim-gold)), hsl(var(--moc-green)), hsl(var(--thuy-blue)), hsl(var(--tho-earth)), hsl(var(--hoa-red)));
+    
+    /* Shadows & Effects */
+    --shadow-piece: 0 4px 12px hsl(var(--primary) / 0.3);
+    --shadow-board: 0 8px 32px hsl(var(--board-border) / 0.2);
+    --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.4);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
