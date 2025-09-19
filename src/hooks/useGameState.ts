@@ -47,44 +47,138 @@ export const useGameState = () => {
     moveHistory: [],
   });
 
+  // Helper function to check if two positions are connected by a drawn diagonal line
+  const isConnectedByDiagonal = useCallback((from: Position, to: Position): boolean => {
+    const fromColIndex = COLUMNS.indexOf(from.col);
+    const toColIndex = COLUMNS.indexOf(to.col);
+    const fromRow = from.row;
+    const toRow = to.row;
+
+    // Check if it's a horizontal or vertical move (allowed on grid lines)
+    if (fromRow === toRow || fromColIndex === toColIndex) {
+      return true;
+    }
+
+    // Check if it's a diagonal move on one of the drawn diagonal lines
+    const rowDiff = toRow - fromRow;
+    const colDiff = toColIndex - fromColIndex;
+
+    // Must be a diagonal move (equal row and column difference)
+    if (Math.abs(rowDiff) !== Math.abs(colDiff)) {
+      return false;
+    }
+
+    // Check each drawn diagonal line to see if both positions lie on it
+    const diagonalLines = [
+      // Main diagonal (top-right to bottom-left): G1 to A7
+      { start: { row: 1, col: 'G' }, end: { row: 7, col: 'A' } },
+      // Anti-diagonal (top-left to bottom-right): A1 to G7
+      { start: { row: 1, col: 'A' }, end: { row: 7, col: 'G' } },
+      // Shorter diagonals
+      { start: { row: 1, col: 'C' }, end: { row: 3, col: 'A' } },
+      { start: { row: 1, col: 'E' }, end: { row: 5, col: 'A' } },
+      { start: { row: 5, col: 'G' }, end: { row: 7, col: 'E' } },
+      { start: { row: 3, col: 'G' }, end: { row: 7, col: 'C' } },
+      { start: { row: 1, col: 'A' }, end: { row: 5, col: 'E' } },
+      { start: { row: 3, col: 'A' }, end: { row: 7, col: 'E' } },
+      { start: { row: 1, col: 'E' }, end: { row: 3, col: 'G' } },
+      { start: { row: 5, col: 'A' }, end: { row: 7, col: 'C' } },
+    ];
+
+    for (const line of diagonalLines) {
+      const startColIndex = COLUMNS.indexOf(line.start.col);
+      const endColIndex = COLUMNS.indexOf(line.end.col);
+
+      // Check if both positions lie on this diagonal line
+      if (isOnDiagonalLine(from, line.start, line.end) && isOnDiagonalLine(to, line.start, line.end)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, []);
+
+  // Helper function to check if a position lies on a diagonal line between two points
+  const isOnDiagonalLine = useCallback((pos: Position, start: Position, end: Position): boolean => {
+    const posColIndex = COLUMNS.indexOf(pos.col);
+    const startColIndex = COLUMNS.indexOf(start.col);
+    const endColIndex = COLUMNS.indexOf(end.col);
+
+    // Check if the position is within the bounds of the line
+    const minRow = Math.min(start.row, end.row);
+    const maxRow = Math.max(start.row, end.row);
+    const minCol = Math.min(startColIndex, endColIndex);
+    const maxCol = Math.max(startColIndex, endColIndex);
+
+    if (pos.row < minRow || pos.row > maxRow || posColIndex < minCol || posColIndex > maxCol) {
+      return false;
+    }
+
+    // Check if the position lies on the diagonal line
+    const rowDiff = pos.row - start.row;
+    const colDiff = posColIndex - startColIndex;
+    const lineRowDiff = end.row - start.row;
+    const lineColDiff = endColIndex - startColIndex;
+
+    // For a diagonal line, the ratio should be the same
+    if (lineRowDiff === 0 && lineColDiff === 0) {
+      return pos.row === start.row && posColIndex === startColIndex;
+    }
+
+    if (lineRowDiff === 0) {
+      return pos.row === start.row;
+    }
+
+    if (lineColDiff === 0) {
+      return posColIndex === startColIndex;
+    }
+
+    return rowDiff * lineColDiff === colDiff * lineRowDiff;
+  }, []);
+
   const getValidMoves = useCallback((piece: GamePiece, board: (GamePiece | null)[][]): Position[] => {
     const validMoves: Position[] = [];
     const { row, col } = piece.position;
     const colIndex = COLUMNS.indexOf(col);
-    
-    // All pieces move the same way: 1 step in any direction (8 directions)
+
+    // Check all possible moves (1 step in any direction)
     const directions = [
       [-1, -1], [-1, 0], [-1, 1],
       [0, -1],           [0, 1],
       [1, -1],  [1, 0],  [1, 1]
     ];
-    
+
     directions.forEach(([deltaRow, deltaCol]) => {
       const newRow = row + deltaRow;
       const newColIndex = colIndex + deltaCol;
-      
+
       // Check bounds
       if (newRow >= 1 && newRow <= 7 && newColIndex >= 0 && newColIndex < 7) {
         const newCol = COLUMNS[newColIndex];
-        const targetSquare = board[newRow - 1][newColIndex];
-        
-        // Can move to empty square or capture enemy piece
-        if (!targetSquare || targetSquare.player !== piece.player) {
-          // Check if this piece can capture the target (if any)
-          if (targetSquare && !canCapture(piece, targetSquare)) {
-            return; // Cannot capture this piece
+        const newPosition = { row: newRow, col: newCol };
+
+        // Check if this move is connected by a drawn line (horizontal, vertical, or diagonal)
+        if (isConnectedByDiagonal(piece.position, newPosition)) {
+          const targetSquare = board[newRow - 1][newColIndex];
+
+          // Can move to empty square or capture enemy piece
+          if (!targetSquare || targetSquare.player !== piece.player) {
+            // Check if this piece can capture the target (if any)
+            if (targetSquare && !canCapture(piece, targetSquare)) {
+              return; // Cannot capture this piece
+            }
+
+            validMoves.push(newPosition);
           }
-          
-          validMoves.push({ row: newRow, col: newCol });
         }
       }
     });
-    
+
     // Pieces can also stay in place (do nothing)
     validMoves.push({ row, col });
-    
+
     return validMoves;
-  }, []);
+  }, [isConnectedByDiagonal]);
 
   const canCapture = (attacker: GamePiece, target: GamePiece): boolean => {
     // Master pieces can capture any piece of the opposite color

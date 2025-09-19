@@ -60,33 +60,35 @@ export const GENERATION_CYCLE: Record<ElementType, ElementType> = {
 export const BOARD_SIZE = 7;
 export const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 export const ROWS = [1, 2, 3, 4, 5, 6, 7];
-export const CENTER_POSITION = { row: 4, col: 'D' }; // Red center square
+export const ROWS_TO_DIAGONALS = [1, 3, 5, 7];
+export const COLUMNS_TO_DIAGONALS = ['A', 'C', 'E', 'G']
+export const CENTER_POSITION = {row: 4, col: 'D'}; // Red center square
 
 // Initial piece positions
 export const INITIAL_POSITIONS: Record<string, { type: PieceType; player: PlayerType }> = {
   // Day player (white pieces) - bottom
-  'A1': { type: 'thuy', player: 'day' },
-  'B1': { type: 'kim', player: 'day' },
-  'C1': { type: 'tho', player: 'day' }, // Actually this should be normal piece, but master goes to D1
-  'D1': { type: 'chu', player: 'day' },  // Master
-  'E1': { type: 'tho', player: 'day' },  // Actually this should be normal piece
-  'F1': { type: 'kim', player: 'day' },
-  'G1': { type: 'thuy', player: 'day' },
-  'A2': { type: 'moc', player: 'day' },
-  'C2': { type: 'hoa', player: 'day' },
-  'E2': { type: 'hoa', player: 'day' },
-  'G2': { type: 'moc', player: 'day' },
+  'A1': {type: 'thuy', player: 'day'},
+  'B1': {type: 'kim', player: 'day'},
+  'C1': {type: 'tho', player: 'day'}, // Actually this should be normal piece, but master goes to D1
+  'D1': {type: 'chu', player: 'day'},  // Master
+  'E1': {type: 'tho', player: 'day'},  // Actually this should be normal piece
+  'F1': {type: 'kim', player: 'day'},
+  'G1': {type: 'thuy', player: 'day'},
+  'A2': {type: 'moc', player: 'day'},
+  'C2': {type: 'hoa', player: 'day'},
+  'E2': {type: 'hoa', player: 'day'},
+  'G2': {type: 'moc', player: 'day'},
 
   // Night player (black pieces) - top  
-  'A7': { type: 'thuy', player: 'night' },
-  'B7': { type: 'kim', player: 'night' },
-  'C7': { type: 'tho', player: 'night' },
-  'D7': { type: 'chu', player: 'night' }, // Master
-  'E7': { type: 'tho', player: 'night' },
-  'F7': { type: 'kim', player: 'night' },
-  'G7': { type: 'thuy', player: 'night' },
-  'A6': { type: 'moc', player: 'night' },
-  'C6': { type: 'hoa', player: 'night' },
-  'E6': { type: 'hoa', player: 'night' },
-  'G6': { type: 'moc', player: 'night' },
+  'A7': {type: 'thuy', player: 'night'},
+  'B7': {type: 'kim', player: 'night'},
+  'C7': {type: 'tho', player: 'night'},
+  'D7': {type: 'chu', player: 'night'}, // Master
+  'E7': {type: 'tho', player: 'night'},
+  'F7': {type: 'kim', player: 'night'},
+  'G7': {type: 'thuy', player: 'night'},
+  'A6': {type: 'moc', player: 'night'},
+  'C6': {type: 'hoa', player: 'night'},
+  'E6': {type: 'hoa', player: 'night'},
+  'G6': {type: 'moc', player: 'night'},
 };

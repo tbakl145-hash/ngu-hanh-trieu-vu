@@ -1,4 +1,4 @@
-import { GameState, Position, COLUMNS, ROWS } from '@/types/game';
+import { GameState, Position, COLUMNS, ROWS, ROWS_TO_DIAGONALS, COLUMNS_TO_DIAGONALS } from '@/types/game';
 import { GamePiece } from './GamePiece';
 import { cn } from '@/lib/utils';
 
@@ -27,14 +27,14 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full flex justify-center">
       {/* Board Container */}
-      <div 
-        className="relative w-[560px] h-[560px] mx-auto rounded-lg shadow-2xl"
+      <div
+        className="relative w-full max-w-[560px] aspect-square rounded-lg shadow-2xl"
         style={{ background: 'var(--gradient-board)' }}
       >
         {/* Grid Lines - Horizontal and Vertical */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 560 560">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 560 560" preserveAspectRatio="xMidYMid meet">
           {/* Horizontal lines */}
           {ROWS.map((row, index) => (
             <line
@@ -62,54 +62,19 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
           ))}
 
           {/* Diagonal lines */}
-          {/* Main diagonals */}
-          <line x1="40" y1="40" x2="520" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
           <line x1="520" y1="40" x2="40" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
-          
-          {/* Additional diagonal connections */}
-          {ROWS.map((row, rowIndex) => 
-            COLUMNS.map((col, colIndex) => {
-              const x = 40 + colIndex * 80;
-              const y = 40 + rowIndex * 80;
-              
-              // Connect to adjacent diagonal squares
-              const lines = [];
-              
-              // Top-right diagonal
-              if (rowIndex > 0 && colIndex < COLUMNS.length - 1) {
-                lines.push(
-                  <line
-                    key={`diag-tr-${row}-${col}`}
-                    x1={x}
-                    y1={y}
-                    x2={x + 80}
-                    y2={y - 80}
-                    stroke="hsl(var(--grid-line))"
-                    strokeWidth="1"
-                    opacity="0.6"
-                  />
-                );
-              }
-              
-              // Bottom-right diagonal
-              if (rowIndex < ROWS.length - 1 && colIndex < COLUMNS.length - 1) {
-                lines.push(
-                  <line
-                    key={`diag-br-${row}-${col}`}
-                    x1={x}
-                    y1={y}
-                    x2={x + 80}
-                    y2={y + 80}
-                    stroke="hsl(var(--grid-line))"
-                    strokeWidth="1"
-                    opacity="0.6"
-                  />
-                );
-              }
-              
-              return lines;
-            })
-          )}
+          <line x1="200" y1="40" x2="40" y2="200" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="360" y1="40" x2="40" y2="360" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="520" y1="360" x2="360" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="520" y1="200" x2="200" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+
+          <line x1="40" y1="40" x2="520" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="40" y1="200" x2="360" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="520" y1="360" x2="200" y2="40" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="360" y1="40" x2="520" y2="200" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="40" y1="360" x2="200" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+
+
         </svg>
 
         {/* Row and Column Labels */}

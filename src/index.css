@@ -9,12 +9,24 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Game Background & Board */
-    --game-background: 45 85% 85%;
-    --board-background: 48 100% 80%;
-    --board-border: 30 15% 15%;
-    --grid-line: 30 25% 25%;
-    --center-universe: 0 85% 55%;
+    /* Game Background & Board - Mid-Autumn Festival Theme */
+    --game-background: 45 25% 96%;
+    --game-pattern: 45 15% 92%;
+    --board-background: 48 35% 88%;
+    --board-border: 30 25% 20%;
+    --grid-line: 30 35% 30%;
+    --center-universe: 0 75% 50%;
+    --traditional-gold: 45 85% 55%;
+    --traditional-red: 0 75% 55%;
+    --traditional-pattern: 45 20% 85%;
+
+    /* Mid-Autumn Festival Colors */
+    --moon-gold: 45 90% 70%;
+    --lantern-red: 0 85% 65%;
+    --lantern-orange: 25 90% 65%;
+    --night-sky: 240 30% 15%;
+    --star-light: 50 100% 85%;
+    --autumn-leaf: 30 70% 50%;
     
     /* Base UI Colors */
     --background: 45 25% 95%;
@@ -59,10 +71,15 @@ All colors MUST be HSL.
     --ring: 45 85% 45%;
     --radius: 0.75rem;
     
-    /* Gradients */
-    --gradient-board: linear-gradient(135deg, hsl(var(--board-background)), hsl(48 90% 75%));
+    /* Enhanced Gradients & Patterns - Mid-Autumn Festival */
+    --gradient-board: linear-gradient(135deg, hsl(var(--board-background)), hsl(48 45% 82%));
     --gradient-piece: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-master: conic-gradient(from 0deg, hsl(var(--hoa-red)), hsl(var(--kim-gold)), hsl(var(--moc-green)), hsl(var(--thuy-blue)), hsl(var(--tho-earth)), hsl(var(--hoa-red)));
+    --gradient-background: radial-gradient(circle at 20% 10%, hsl(var(--moon-gold) / 0.15), transparent 40%),
+                          radial-gradient(circle at 80% 20%, hsl(var(--lantern-red) / 0.1), transparent 30%),
+                          radial-gradient(circle at 60% 80%, hsl(var(--lantern-orange) / 0.08), transparent 35%),
+                          linear-gradient(135deg, hsl(var(--game-background)), hsl(var(--game-pattern)));
+    --pattern-midautumn: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='20' r='8'/%3E%3Cpath d='M20 40l8-8 8 8-8 8z'/%3E%3Cpath d='M60 40l8-8 8 8-8 8z'/%3E%3Ccircle cx='40' cy='60' r='6'/%3E%3C/g%3E%3Cg fill='%23ff6b35' fill-opacity='0.02'%3E%3Cpath d='M10 10l6 6-6 6-6-6z'/%3E%3Cpath d='M70 10l6 6-6 6-6-6z'/%3E%3Cpath d='M10 70l6 6-6 6-6-6z'/%3E%3Cpath d='M70 70l6 6-6 6-6-6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     
     /* Shadows & Effects */
     --shadow-piece: 0 4px 12px hsl(var(--primary) / 0.3);
@@ -136,5 +153,273 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-elements-kim { color: hsl(var(--kim-gold)); }
+  .text-elements-thuy { color: hsl(var(--thuy-blue)); }
+  .text-elements-moc { color: hsl(var(--moc-green)); }
+  .text-elements-hoa { color: hsl(var(--hoa-red)); }
+  .text-elements-tho { color: hsl(var(--tho-earth)); }
+
+  .bg-elements-kim { background-color: hsl(var(--kim-gold)); }
+  .bg-elements-thuy { background-color: hsl(var(--thuy-blue)); }
+  .bg-elements-moc { background-color: hsl(var(--moc-green)); }
+  .bg-elements-hoa { background-color: hsl(var(--hoa-red)); }
+  .bg-elements-tho { background-color: hsl(var(--tho-earth)); }
+
+  .bg-game-background {
+    background: var(--gradient-background), var(--pattern-midautumn);
+    background-size: 100% 100%, 80px 80px;
+    position: relative;
+  }
+
+  .bg-game-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 15% 15%, hsl(var(--moon-gold) / 0.1), transparent 20%),
+      radial-gradient(circle at 85% 25%, hsl(var(--lantern-red) / 0.08), transparent 15%),
+      radial-gradient(circle at 25% 85%, hsl(var(--lantern-orange) / 0.06), transparent 18%),
+      radial-gradient(circle at 75% 75%, hsl(var(--star-light) / 0.05), transparent 12%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-game-center { background-color: hsl(var(--center-universe)); }
+  .bg-player-day { background-color: hsl(var(--day-player)); }
+  .bg-player-night { background-color: hsl(var(--night-player)); }
+  .bg-state-valid { background-color: hsl(var(--valid-move)); }
+  .bg-state-selected { background-color: hsl(var(--selected-piece)); }
+
+  .text-game-border { color: hsl(var(--board-border)); }
+  .border-game-border { border-color: hsl(var(--board-border)); }
+  .ring-state-valid { --tw-ring-color: hsl(var(--valid-move)); }
+  .ring-state-selected { --tw-ring-color: hsl(var(--selected-piece)); }
+
+  /* Layout utilities */
+  .panel-transition {
+    transition: width 0.3s ease-in-out;
+  }
+
+  /* Glass morphism effects */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Smooth scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 2px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+
+  /* Enhanced Mobile responsive adjustments */
+  @media (max-width: 640px) {
+    .mobile-board-container {
+      padding: 0.5rem;
+    }
+
+    .mobile-board-size {
+      width: min(95vw, 380px);
+      height: min(95vw, 380px);
+    }
+
+    .mobile-header-title {
+      font-size: 1.25rem;
+    }
+
+    .mobile-panel-spacing {
+      padding: 0.75rem;
+    }
+
+    .mobile-card-compact {
+      padding: 0.5rem;
+    }
+  }
+
+  /* Enhanced Tablet responsive adjustments */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .tablet-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 1rem;
+    }
+
+    .tablet-board-size {
+      width: min(70vw, 500px);
+      height: min(70vw, 500px);
+    }
+
+    .tablet-panel-width {
+      width: 16rem;
+    }
+  }
+
+  /* Large screen optimizations */
+  @media (min-width: 1440px) {
+    .large-screen-board {
+      max-width: 700px;
+    }
+
+    .large-screen-panel {
+      width: 22rem;
+    }
+  }
+
+  /* Ultra-wide screen adjustments */
+  @media (min-width: 1920px) {
+    .ultra-wide-container {
+      max-width: 1600px;
+    }
+  }
+
+  /* Enhanced animations */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+  }
+
+  .animate-lantern-sway {
+    animation: lanternSway 4s ease-in-out infinite;
+  }
+
+  .animate-moon-glow {
+    animation: moonGlow 3s ease-in-out infinite alternate;
+  }
+
+  .animate-star-twinkle {
+    animation: starTwinkle 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    to {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes pulseSoft {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lanternSway {
+    0%, 100% {
+      transform: rotate(-2deg) translateY(0px);
+    }
+    50% {
+      transform: rotate(2deg) translateY(-3px);
+    }
+  }
+
+  @keyframes moonGlow {
+    from {
+      box-shadow: 0 0 10px hsl(var(--moon-gold) / 0.3), 0 0 20px hsl(var(--moon-gold) / 0.2);
+    }
+    to {
+      box-shadow: 0 0 20px hsl(var(--moon-gold) / 0.5), 0 0 40px hsl(var(--moon-gold) / 0.3);
+    }
+  }
+
+  @keyframes starTwinkle {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
