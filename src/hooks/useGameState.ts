@@ -52,10 +52,31 @@ export const useGameState = () => {
     const { row, col } = piece.position;
     const colIndex = COLUMNS.indexOf(col);
     
-    // Check if current position can make diagonal moves
-    const isOddRow = row % 2 === 1;
-    const isDiagonalCol = ['A', 'C', 'F', 'G'].includes(col);
-    const canMoveDiagonally = isOddRow && isDiagonalCol;
+    // Define specific diagonal connections from the board
+    const diagonalConnections = [
+      // From left to right, bottom to top
+      { from: { row: 1, col: 'A' }, to: { row: 7, col: 'G' } },
+      { from: { row: 3, col: 'A' }, to: { row: 5, col: 'E' } },
+      { from: { row: 5, col: 'A' }, to: { row: 3, col: 'C' } },
+      { from: { row: 3, col: 'C' }, to: { row: 5, col: 'A' } },
+      { from: { row: 5, col: 'E' }, to: { row: 3, col: 'A' } },
+      // From left to right, top to bottom
+      { from: { row: 7, col: 'A' }, to: { row: 5, col: 'C' } },
+      { from: { row: 7, col: 'C' }, to: { row: 5, col: 'E' } },
+      { from: { row: 7, col: 'E' }, to: { row: 1, col: 'G' } },
+      { from: { row: 5, col: 'C' }, to: { row: 7, col: 'A' } },
+      { from: { row: 5, col: 'E' }, to: { row: 7, col: 'C' } },
+    ];
+    
+    // Check if current position can make diagonal moves along specific lines
+    const canMoveDiagonally = (from: Position, to: Position): boolean => {
+      return diagonalConnections.some(connection => 
+        (connection.from.row === from.row && connection.from.col === from.col &&
+         connection.to.row === to.row && connection.to.col === to.col) ||
+        (connection.to.row === from.row && connection.to.col === from.col &&
+         connection.from.row === to.row && connection.from.col === to.col)
+      );
+    };
     
     // All pieces can move horizontally and vertically (along grid lines)
     const orthogonalDirections = [
@@ -63,14 +84,6 @@ export const useGameState = () => {
       [1, 0],  // Down
       [0, -1], // Left
       [0, 1],  // Right
-    ];
-    
-    // Diagonal directions (only if at diagonal intersection)
-    const diagonalDirections = [
-      [-1, -1], // Top-left
-      [-1, 1],  // Top-right
-      [1, -1],  // Bottom-left
-      [1, 1]    // Bottom-right
     ];
     
     // Check orthogonal moves (always available)
@@ -95,16 +108,21 @@ export const useGameState = () => {
       }
     });
     
-    // Check diagonal moves (only if at diagonal intersection)
-    if (canMoveDiagonally) {
-      diagonalDirections.forEach(([deltaRow, deltaCol]) => {
-        const newRow = row + deltaRow;
-        const newColIndex = colIndex + deltaCol;
+    // Check diagonal moves along specific diagonal lines only
+    ROWS.forEach(targetRow => {
+      COLUMNS.forEach(targetCol => {
+        const targetPosition = { row: targetRow, col: targetCol };
         
-        // Check bounds
-        if (newRow >= 1 && newRow <= 7 && newColIndex >= 0 && newColIndex < 7) {
-          const newCol = COLUMNS[newColIndex];
-          const targetSquare = board[newRow - 1][newColIndex];
+        // Skip current position and orthogonal moves (already checked)
+        if ((targetRow === row && targetCol === col) ||
+            (targetRow === row || targetCol === col)) {
+          return;
+        }
+        
+        // Check if this is a valid diagonal connection
+        if (canMoveDiagonally(piece.position, targetPosition)) {
+          const targetColIndex = COLUMNS.indexOf(targetCol);
+          const targetSquare = board[targetRow - 1][targetColIndex];
           
           // Can move to empty square or capture enemy piece
           if (!targetSquare || targetSquare.player !== piece.player) {
@@ -113,11 +131,11 @@ export const useGameState = () => {
               return; // Cannot capture this piece
             }
             
-            validMoves.push({ row: newRow, col: newCol });
+            validMoves.push(targetPosition);
           }
         }
       });
-    }
+    });
     
     // Pieces can also stay in place (do nothing)
     validMoves.push({ row, col });

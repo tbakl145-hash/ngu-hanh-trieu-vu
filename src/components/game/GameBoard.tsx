@@ -61,58 +61,52 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
             />
           ))}
 
-          {/* Diagonal lines - only from odd rows (1,3,5,7) and specific columns (A,C,F,G) */}
-          {ROWS.map((row, rowIndex) => 
-            COLUMNS.map((col, colIndex) => {
-              // Only draw diagonals from odd rows and specific columns (A, C, F, G)
-              const isOddRow = row % 2 === 1;
-              const isDiagonalCol = ['A', 'C', 'F', 'G'].includes(col);
+          {/* Specific diagonal lines from edge to edge */}
+          {(() => {
+            const diagonalLines = [];
+            
+            // From left to right, bottom to top: 1-G, 3-E, 5-C, C-5, E-3
+            const bottomToTopDiagonals = [
+              { fromRow: 1, fromCol: 'A', toRow: 7, toCol: 'G' }, // 1-G
+              { fromRow: 3, fromCol: 'A', toRow: 5, toCol: 'E' }, // 3-E  
+              { fromRow: 5, fromCol: 'A', toRow: 3, toCol: 'C' }, // 5-C
+              { fromRow: 3, fromCol: 'C', toRow: 5, toCol: 'A' }, // C-5 (reverse)
+              { fromRow: 5, fromCol: 'E', toRow: 3, toCol: 'A' }, // E-3 (reverse)
+            ];
+            
+            // From left to right, top to bottom: 3-C, 5-E, 7-G, C-3, E-5
+            const topToBottomDiagonals = [
+              { fromRow: 7, fromCol: 'A', toRow: 5, toCol: 'C' }, // 3-C (from top)
+              { fromRow: 7, fromCol: 'C', toRow: 5, toCol: 'E' }, // 5-E (from top)
+              { fromRow: 7, fromCol: 'E', toRow: 1, toCol: 'G' }, // 7-G (from top)
+              { fromRow: 5, fromCol: 'C', toRow: 7, toCol: 'A' }, // C-3 (reverse)
+              { fromRow: 5, fromCol: 'E', toRow: 7, toCol: 'C' }, // E-5 (reverse)
+            ];
+            
+            const allDiagonals = [...bottomToTopDiagonals, ...topToBottomDiagonals];
+            
+            allDiagonals.forEach(({ fromRow, fromCol, toRow, toCol }, index) => {
+              const fromX = 40 + COLUMNS.indexOf(fromCol) * 80;
+              const fromY = 40 + (ROWS.length - fromRow) * 80;
+              const toX = 40 + COLUMNS.indexOf(toCol) * 80;
+              const toY = 40 + (ROWS.length - toRow) * 80;
               
-              if (!isOddRow || !isDiagonalCol) {
-                return null;
-              }
-              
-              const x = 40 + colIndex * 80;
-              const y = 40 + (ROWS.length - row) * 80; // Adjusted for correct positioning
-              
-              const lines = [];
-              
-              // Draw diagonals to adjacent squares (all 4 diagonal directions)
-              const diagonalDirections = [
-                [-1, -1], // Top-left
-                [-1, 1],  // Top-right
-                [1, -1],  // Bottom-left
-                [1, 1]    // Bottom-right
-              ];
-              
-              diagonalDirections.forEach(([deltaRow, deltaCol], index) => {
-                const targetRow = row + deltaRow;
-                const targetColIndex = colIndex + deltaCol;
-                const targetCol = COLUMNS[targetColIndex];
-                
-                // Check if target position is within bounds
-                if (targetRow >= 1 && targetRow <= 7 && targetColIndex >= 0 && targetColIndex < 7) {
-                  const targetX = 40 + targetColIndex * 80;
-                  const targetY = 40 + (ROWS.length - targetRow) * 80;
-                  
-                  lines.push(
-                    <line
-                      key={`diag-${row}-${col}-${index}`}
-                      x1={x}
-                      y1={y}
-                      x2={targetX}
-                      y2={targetY}
-                      stroke="hsl(var(--grid-line))"
-                      strokeWidth="1.5"
-                      opacity="0.7"
-                    />
-                  );
-                }
-              });
-              
-              return lines;
-            })
-          )}
+              diagonalLines.push(
+                <line
+                  key={`diagonal-${index}`}
+                  x1={fromX}
+                  y1={fromY}
+                  x2={toX}
+                  y2={toY}
+                  stroke="hsl(var(--grid-line))"
+                  strokeWidth="1.5"
+                  opacity="0.7"
+                />
+              );
+            });
+            
+            return diagonalLines;
+          })()}
         </svg>
 
         {/* Row and Column Labels */}
