@@ -54,27 +54,34 @@ export const useGameState = () => {
     
     // Define specific diagonal connections from the board
     const diagonalConnections = [
-      // From left to right, bottom to top
+      // Main long diagonals
       { from: { row: 1, col: 'A' }, to: { row: 7, col: 'G' } },
-      { from: { row: 3, col: 'A' }, to: { row: 5, col: 'E' } },
-      { from: { row: 5, col: 'A' }, to: { row: 3, col: 'C' } },
-      { from: { row: 3, col: 'C' }, to: { row: 5, col: 'A' } },
-      { from: { row: 5, col: 'E' }, to: { row: 3, col: 'A' } },
-      // From left to right, top to bottom
-      { from: { row: 7, col: 'A' }, to: { row: 5, col: 'C' } },
-      { from: { row: 7, col: 'C' }, to: { row: 5, col: 'E' } },
-      { from: { row: 7, col: 'E' }, to: { row: 1, col: 'G' } },
-      { from: { row: 5, col: 'C' }, to: { row: 7, col: 'A' } },
-      { from: { row: 5, col: 'E' }, to: { row: 7, col: 'C' } },
+      { from: { row: 7, col: 'A' }, to: { row: 1, col: 'G' } },
+      
+      // Shorter diagonals from left edge
+      { from: { row: 3, col: 'A' }, to: { row: 7, col: 'E' } },
+      { from: { row: 5, col: 'A' }, to: { row: 7, col: 'C' } },
+      
+      // Shorter diagonals from right edge
+      { from: { row: 1, col: 'G' }, to: { row: 5, col: 'C' } },
+      { from: { row: 1, col: 'G' }, to: { row: 3, col: 'E' } },
+      
+      // Additional diagonals from bottom edge
+      { from: { row: 1, col: 'C' }, to: { row: 5, col: 'G' } },
+      { from: { row: 1, col: 'E' }, to: { row: 3, col: 'G' } },
+      
+      // Additional diagonals from top edge
+      { from: { row: 7, col: 'C' }, to: { row: 3, col: 'A' } },
+      { from: { row: 7, col: 'E' }, to: { row: 5, col: 'A' } },
     ];
     
-    // Check if current position can make diagonal moves along specific lines
-    const canMoveDiagonally = (from: Position, to: Position): boolean => {
+    // Check if two positions are connected by a diagonal line
+    const areConnectedDiagonally = (pos1: Position, pos2: Position): boolean => {
       return diagonalConnections.some(connection => 
-        (connection.from.row === from.row && connection.from.col === from.col &&
-         connection.to.row === to.row && connection.to.col === to.col) ||
-        (connection.to.row === from.row && connection.to.col === from.col &&
-         connection.from.row === to.row && connection.from.col === to.col)
+        (connection.from.row === pos1.row && connection.from.col === pos1.col &&
+         connection.to.row === pos2.row && connection.to.col === pos2.col) ||
+        (connection.to.row === pos1.row && connection.to.col === pos1.col &&
+         connection.from.row === pos2.row && connection.from.col === pos2.col)
       );
     };
     
@@ -120,7 +127,7 @@ export const useGameState = () => {
         }
         
         // Check if this is a valid diagonal connection
-        if (canMoveDiagonally(piece.position, targetPosition)) {
+        if (areConnectedDiagonally(piece.position, targetPosition)) {
           const targetColIndex = COLUMNS.indexOf(targetCol);
           const targetSquare = board[targetRow - 1][targetColIndex];
           

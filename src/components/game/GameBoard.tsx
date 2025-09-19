@@ -61,31 +61,37 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
             />
           ))}
 
-          {/* Specific diagonal lines from edge to edge */}
+          {/* Specific diagonal lines as requested */}
           {(() => {
             const diagonalLines = [];
             
+            // Exact diagonal connections as specified:
             // From left to right, bottom to top: 1-G, 3-E, 5-C, C-5, E-3
-            const bottomToTopDiagonals = [
-              { fromRow: 1, fromCol: 'A', toRow: 7, toCol: 'G' }, // 1-G
-              { fromRow: 3, fromCol: 'A', toRow: 5, toCol: 'E' }, // 3-E  
-              { fromRow: 5, fromCol: 'A', toRow: 3, toCol: 'C' }, // 5-C
-              { fromRow: 3, fromCol: 'C', toRow: 5, toCol: 'A' }, // C-5 (reverse)
-              { fromRow: 5, fromCol: 'E', toRow: 3, toCol: 'A' }, // E-3 (reverse)
-            ];
-            
             // From left to right, top to bottom: 3-C, 5-E, 7-G, C-3, E-5
-            const topToBottomDiagonals = [
-              { fromRow: 7, fromCol: 'A', toRow: 5, toCol: 'C' }, // 3-C (from top)
-              { fromRow: 7, fromCol: 'C', toRow: 5, toCol: 'E' }, // 5-E (from top)
-              { fromRow: 7, fromCol: 'E', toRow: 1, toCol: 'G' }, // 7-G (from top)
-              { fromRow: 5, fromCol: 'C', toRow: 7, toCol: 'A' }, // C-3 (reverse)
-              { fromRow: 5, fromCol: 'E', toRow: 7, toCol: 'C' }, // E-5 (reverse)
+            
+            const specificDiagonals = [
+              // Main long diagonals
+              { fromRow: 1, fromCol: 'A', toRow: 7, toCol: 'G' }, // A1 to G7
+              { fromRow: 7, fromCol: 'A', toRow: 1, toCol: 'G' }, // A7 to G1
+              
+              // Shorter diagonals from left edge
+              { fromRow: 3, fromCol: 'A', toRow: 7, toCol: 'E' }, // A3 to E7
+              { fromRow: 5, fromCol: 'A', toRow: 7, toCol: 'C' }, // A5 to C7
+              
+              // Shorter diagonals from right edge
+              { fromRow: 1, fromCol: 'G', toRow: 5, toCol: 'C' }, // G1 to C5
+              { fromRow: 1, fromCol: 'G', toRow: 3, toCol: 'E' }, // G1 to E3
+              
+              // Additional diagonals from bottom edge
+              { fromRow: 1, fromCol: 'C', toRow: 5, toCol: 'G' }, // C1 to G5
+              { fromRow: 1, fromCol: 'E', toRow: 3, toCol: 'G' }, // E1 to G3
+              
+              // Additional diagonals from top edge
+              { fromRow: 7, fromCol: 'C', toRow: 3, toCol: 'A' }, // C7 to A3
+              { fromRow: 7, fromCol: 'E', toRow: 5, toCol: 'A' }, // E7 to A5
             ];
             
-            const allDiagonals = [...bottomToTopDiagonals, ...topToBottomDiagonals];
-            
-            allDiagonals.forEach(({ fromRow, fromCol, toRow, toCol }, index) => {
+            specificDiagonals.forEach(({ fromRow, fromCol, toRow, toCol }, index) => {
               const fromX = 40 + COLUMNS.indexOf(fromCol) * 80;
               const fromY = 40 + (ROWS.length - fromRow) * 80;
               const toX = 40 + COLUMNS.indexOf(toCol) * 80;
