@@ -61,58 +61,55 @@ export const GameBoard = ({ gameState, onSquareClick }: GameBoardProps) => {
             />
           ))}
 
-          {/* Specific diagonal lines as requested */}
-          {(() => {
-            const diagonalLines = [];
-            
-            // Exact diagonal connections as specified:
-            // From left to right, bottom to top: 1-G, 3-E, 5-C, C-5, E-3
-            // From left to right, top to bottom: 3-C, 5-E, 7-G, C-3, E-5
-            
-            const specificDiagonals = [
-              // Main long diagonals
-              { fromRow: 1, fromCol: 'A', toRow: 7, toCol: 'G' }, // A1 to G7
-              { fromRow: 7, fromCol: 'A', toRow: 1, toCol: 'G' }, // A7 to G1
+          {/* Diagonal lines */}
+          {/* Main diagonals */}
+          <line x1="40" y1="40" x2="520" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          <line x1="520" y1="40" x2="40" y2="520" stroke="hsl(var(--grid-line))" strokeWidth="2" />
+          
+          {/* Additional diagonal connections */}
+          {ROWS.map((row, rowIndex) => 
+            COLUMNS.map((col, colIndex) => {
+              const x = 40 + colIndex * 80;
+              const y = 40 + rowIndex * 80;
               
-              // Shorter diagonals from left edge
-              { fromRow: 3, fromCol: 'A', toRow: 7, toCol: 'E' }, // A3 to E7
-              { fromRow: 5, fromCol: 'A', toRow: 7, toCol: 'C' }, // A5 to C7
+              // Connect to adjacent diagonal squares
+              const lines = [];
               
-              // Shorter diagonals from right edge
-              { fromRow: 1, fromCol: 'G', toRow: 5, toCol: 'C' }, // G1 to C5
-              { fromRow: 1, fromCol: 'G', toRow: 3, toCol: 'E' }, // G1 to E3
+              // Top-right diagonal
+              if (rowIndex > 0 && colIndex < COLUMNS.length - 1) {
+                lines.push(
+                  <line
+                    key={`diag-tr-${row}-${col}`}
+                    x1={x}
+                    y1={y}
+                    x2={x + 80}
+                    y2={y - 80}
+                    stroke="hsl(var(--grid-line))"
+                    strokeWidth="1"
+                    opacity="0.6"
+                  />
+                );
+              }
               
-              // Additional diagonals from bottom edge
-              { fromRow: 1, fromCol: 'C', toRow: 5, toCol: 'G' }, // C1 to G5
-              { fromRow: 1, fromCol: 'E', toRow: 3, toCol: 'G' }, // E1 to G3
+              // Bottom-right diagonal
+              if (rowIndex < ROWS.length - 1 && colIndex < COLUMNS.length - 1) {
+                lines.push(
+                  <line
+                    key={`diag-br-${row}-${col}`}
+                    x1={x}
+                    y1={y}
+                    x2={x + 80}
+                    y2={y + 80}
+                    stroke="hsl(var(--grid-line))"
+                    strokeWidth="1"
+                    opacity="0.6"
+                  />
+                );
+              }
               
-              // Additional diagonals from top edge
-              { fromRow: 7, fromCol: 'C', toRow: 3, toCol: 'A' }, // C7 to A3
-              { fromRow: 7, fromCol: 'E', toRow: 5, toCol: 'A' }, // E7 to A5
-            ];
-            
-            specificDiagonals.forEach(({ fromRow, fromCol, toRow, toCol }, index) => {
-              const fromX = 40 + COLUMNS.indexOf(fromCol) * 80;
-              const fromY = 40 + (ROWS.length - fromRow) * 80;
-              const toX = 40 + COLUMNS.indexOf(toCol) * 80;
-              const toY = 40 + (ROWS.length - toRow) * 80;
-              
-              diagonalLines.push(
-                <line
-                  key={`diagonal-${index}`}
-                  x1={fromX}
-                  y1={fromY}
-                  x2={toX}
-                  y2={toY}
-                  stroke="hsl(var(--grid-line))"
-                  strokeWidth="1.5"
-                  opacity="0.7"
-                />
-              );
-            });
-            
-            return diagonalLines;
-          })()}
+              return lines;
+            })
+          )}
         </svg>
 
         {/* Row and Column Labels */}

@@ -52,49 +52,14 @@ export const useGameState = () => {
     const { row, col } = piece.position;
     const colIndex = COLUMNS.indexOf(col);
     
-    // Define specific diagonal connections from the board
-    const diagonalConnections = [
-      // Main long diagonals
-      { from: { row: 1, col: 'A' }, to: { row: 7, col: 'G' } },
-      { from: { row: 7, col: 'A' }, to: { row: 1, col: 'G' } },
-      
-      // Shorter diagonals from left edge
-      { from: { row: 3, col: 'A' }, to: { row: 7, col: 'E' } },
-      { from: { row: 5, col: 'A' }, to: { row: 7, col: 'C' } },
-      
-      // Shorter diagonals from right edge
-      { from: { row: 1, col: 'G' }, to: { row: 5, col: 'C' } },
-      { from: { row: 1, col: 'G' }, to: { row: 3, col: 'E' } },
-      
-      // Additional diagonals from bottom edge
-      { from: { row: 1, col: 'C' }, to: { row: 5, col: 'G' } },
-      { from: { row: 1, col: 'E' }, to: { row: 3, col: 'G' } },
-      
-      // Additional diagonals from top edge
-      { from: { row: 7, col: 'C' }, to: { row: 3, col: 'A' } },
-      { from: { row: 7, col: 'E' }, to: { row: 5, col: 'A' } },
+    // All pieces move the same way: 1 step in any direction (8 directions)
+    const directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [0, -1],           [0, 1],
+      [1, -1],  [1, 0],  [1, 1]
     ];
     
-    // Check if two positions are connected by a diagonal line
-    const areConnectedDiagonally = (pos1: Position, pos2: Position): boolean => {
-      return diagonalConnections.some(connection => 
-        (connection.from.row === pos1.row && connection.from.col === pos1.col &&
-         connection.to.row === pos2.row && connection.to.col === pos2.col) ||
-        (connection.to.row === pos1.row && connection.to.col === pos1.col &&
-         connection.from.row === pos2.row && connection.from.col === pos2.col)
-      );
-    };
-    
-    // All pieces can move horizontally and vertically (along grid lines)
-    const orthogonalDirections = [
-      [-1, 0], // Up
-      [1, 0],  // Down
-      [0, -1], // Left
-      [0, 1],  // Right
-    ];
-    
-    // Check orthogonal moves (always available)
-    orthogonalDirections.forEach(([deltaRow, deltaCol]) => {
+    directions.forEach(([deltaRow, deltaCol]) => {
       const newRow = row + deltaRow;
       const newColIndex = colIndex + deltaCol;
       
@@ -113,35 +78,6 @@ export const useGameState = () => {
           validMoves.push({ row: newRow, col: newCol });
         }
       }
-    });
-    
-    // Check diagonal moves along specific diagonal lines only
-    ROWS.forEach(targetRow => {
-      COLUMNS.forEach(targetCol => {
-        const targetPosition = { row: targetRow, col: targetCol };
-        
-        // Skip current position and orthogonal moves (already checked)
-        if ((targetRow === row && targetCol === col) ||
-            (targetRow === row || targetCol === col)) {
-          return;
-        }
-        
-        // Check if this is a valid diagonal connection
-        if (areConnectedDiagonally(piece.position, targetPosition)) {
-          const targetColIndex = COLUMNS.indexOf(targetCol);
-          const targetSquare = board[targetRow - 1][targetColIndex];
-          
-          // Can move to empty square or capture enemy piece
-          if (!targetSquare || targetSquare.player !== piece.player) {
-            // Check if this piece can capture the target (if any)
-            if (targetSquare && !canCapture(piece, targetSquare)) {
-              return; // Cannot capture this piece
-            }
-            
-            validMoves.push(targetPosition);
-          }
-        }
-      });
     });
     
     // Pieces can also stay in place (do nothing)
